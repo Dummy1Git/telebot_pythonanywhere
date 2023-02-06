@@ -102,11 +102,11 @@ def respond():
 @app.route('/setwebhook',methods=['GET','POST'])
 def setwebhook():
     d=updater.bot.delete_webhook()
-    s=updater.bot.setWebhook(url='https://api.render.com/deploy/srv-cfgmmeun6mph1jputjpg?key=cWHTJIHDn6c'+API_KEY)
+    s=updater.bot.setWebhook(url='https://telegram-bot-render-ao5o.onrender.com'+API_KEY)
     if s:
-        return '<h1>Webhook ok</h1>'
+        return 200 '<h1>Webhook ok</h1>'
     else:
-        return '<h1>Webhook not ok</h1>'  
+        return 400 '<h1>Webhook not ok</h1>'  
 
 if __name__ == "__main__":
     app.run(threaded=True)
