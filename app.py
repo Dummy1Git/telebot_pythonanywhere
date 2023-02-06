@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import telebot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup 
 import os
-from flask import Flask, request
+#from flask import Flask, request
 
 
 API_KEY='5659848773:AAE9rS1gsy4K-9kLo6rJVSXT8JQKvpxpEII'
