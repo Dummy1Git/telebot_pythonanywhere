@@ -1,7 +1,6 @@
 import requests
 from flask import Flask, request
 from bs4 import BeautifulSoup
-import telegram
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -10,7 +9,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
 
-bot=telegram.Bot(API_KEY)
+
 updater=Updater(API_KEY,use_context=True)
 dp = updater.dispatcher
 
@@ -98,8 +97,7 @@ dp.add_handler(MessageHandler(Filters.text,try_statement))
 
 @app.route('/',methods=['GET','POST'])
 def respond():
-    update=Update.de_json(request.get_json(force=True),bot=bot)
-    return 'ok'
+    return '<h1>Bot is working fine</h1>'
 
 @app.route('/setwebhook', methods=['GET','POST'])
 def set_webhook():
