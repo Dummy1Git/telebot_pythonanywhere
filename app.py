@@ -91,12 +91,13 @@ def try_statement(update,context):
                     update.message.reply_text('check the spelling')
 
 
-dp.add_handler(CommandHandler('start',start_handler))
-dp.add_handler(MessageHandler(Filters.text,try_statement))
+
 
 
 @app.route('/',methods=['GET','POST'])
 def respond():
+    dp.add_handler(CommandHandler('start',start_handler))
+    dp.add_handler(MessageHandler(Filters.text,try_statement))
     return '<h1>Bot is working fine</h1>'
 
 @app.route('/setwebhook', methods=['GET','POST'])
