@@ -1,19 +1,30 @@
 import requests
 from flask import Flask, request
 from bs4 import BeautifulSoup
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-
+from telegram import Update,Bot, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Dispatcher
 
 
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
 
 
-updater=Updater(API_KEY,use_context=True)
-dp = updater.dispatcher
-
 app=Flask(__name__)
+
+
+@app.route('/',methods=['GET','POST'])
+def Index():
+    return '<h1>Bot is working fine</h1>'
+
+
+@app.route(f'/{API_KEY}', methods=['GET', 'POST'])
+def webhook():
+    """webhook view which receives updates from telegram"""
+    # create update object from json-format request data
+    update = Update.de_json(request.get_json(), bot)
+    # process update
+    dp.process_update(update)
+    return "ok"
 
 def start_handler(update,context):
     update.message.reply_text('Hello there! Send me any movie name')
@@ -91,22 +102,12 @@ def try_statement(update,context):
                     update.message.reply_text('check the spelling')
 
 
-dp.add_handler(CommandHandler('start',start_handler))
-dp.add_handler(MessageHandler(Filters.text,try_statement))
-
-
-@app.route('/',methods=['GET','POST'])
-def respond():
-    return '<h1>Bot is working fine</h1>'
-
-@app.route('/setwebhook',methods=['GET','POST'])
-def setwebhook():
-    d=updater.bot.delete_webhook()
-    s=updater.bot.setWebhook(url='https://telegram-bot-render-ao5o.onrender.com'+API_KEY)
-    if s:
-        return 200 '<h1>Webhook ok</h1>'
-    else:
-        return 400 '<h1>Webhook not ok</h1>'  
-
-if __name__ == "__main__":
+if __name__=="__main__":
+    bot=Bot(API_KEY)
+    bot.set_webhook('https://telegram-bot-render-ao5o.onrender.com/'+API_KEY)
+    
+    dp=Dispatcher(bot,None)
+    
+    dp.add_handler(CommandHandler('start',start_handler))
+    dp.add_handler(MessageHandler(Filters.text,try_statement))
     app.run(threaded=True)
