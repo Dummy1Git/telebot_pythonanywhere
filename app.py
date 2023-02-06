@@ -91,24 +91,22 @@ def try_statement(update,context):
                     update.message.reply_text('check the spelling')
 
 
-
+ dp.add_handler(CommandHandler('start',start_handler))
+ dp.add_handler(MessageHandler(Filters.text,try_statement))
 
 
 @app.route('/',methods=['GET','POST'])
 def respond():
-    dp.add_handler(CommandHandler('start',start_handler))
-    dp.add_handler(MessageHandler(Filters.text,try_statement))
     return '<h1>Bot is working fine</h1>'
 
-@app.route('/setwebhook', methods=['GET','POST'])
-def set_webhook():
-    webhook_url='https://api.render.com/deploy/srv-cfgmmeun6mph1jputjpg?key=cWHTJIHDn6c'
-    s=bot.set_webhook(url='{}{}'.format(webhook_url,API_KEY))
-    
+@app.route('/setwebhook',methods=['GET','POST'])
+def setwebhook():
+    d=updater.bot.delete_webhook()
+    s=updater.bot.setWebhook(url='https://api.render.com/deploy/srv-cfgmmeun6mph1jputjpg?key=cWHTJIHDn6c'+API_KEY)
     if s:
-        return "webhook setup ok"
+        return '<h1>Webhook ok</h1>'
     else:
-        return "webhook setup failed"
+        return '<h1>Webhook not ok</h1>'  
 
 if __name__ == "__main__":
     app.run(threaded=True)
