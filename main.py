@@ -1,15 +1,20 @@
 import requests
+from flask import Flask, request
 from bs4 import BeautifulSoup
+import telegram
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
 
 
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
 
+bot=telegram.Bot(API_KEY)
 updater=Updater(API_KEY,use_context=True)
 dp = updater.dispatcher
 
+app=Flask(__name__)
 
 def start_handler(update,context):
     update.message.reply_text('Hello there! Send me any movie name')
@@ -90,5 +95,21 @@ def try_statement(update,context):
 dp.add_handler(CommandHandler('start',start_handler))
 dp.add_handler(MessageHandler(Filters.text,try_statement))
 
-updater.start_polling(timeout=15, read_latency=4, drop_pending_updates=True)
-updater.idle()
+
+@app.route('/',methods=['GET','POST'])
+def respond():
+    update=Update.de_json(request.get_json(force=True),bot=bot)
+    return 'ok'
+
+@app.route('/setwebhook', methods=['GET','POST'])
+def set_webhook():
+    webhook_url='https://telegram-bot-render-ao5o.onrender.com'
+    s=bot.set_webhook(url='{}{}'.format(webhook_url,API_KEY))
+    
+    if s:
+        return "webhook setup ok"
+    else:
+        return "webhook setup failed"
+
+if __name__ == "__main__":
+    app.run(threaded=True)
