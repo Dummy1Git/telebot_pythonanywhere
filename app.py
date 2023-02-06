@@ -11,7 +11,7 @@ url='https://masstamilan.dev'
 chat_id=-762532735
 
 
-app=Flask(__name__)
+#app=Flask(__name__)
 
 def word_checker(movie):
     movie=movie.text
@@ -84,30 +84,31 @@ bot=telebot.TeleBot(API_KEY,parse_mode=None)
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-	bot.send_message(message.chat.id, 'Welcome !! Enter a movie name')
+	bot.send_message(message.chat_id, 'Welcome !! Enter a movie name')
 
 @bot.message_handler(func=try_statement)
 def pass_state(movie):
     pass
 
-@app.route("/"+ API_KEY,methods=["POST"])
-def getMessage():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-    return "!", 200
+#@app.route("/"+ API_KEY,methods=["POST"])
+#def getMessage():
+#    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+#    return "!", 200
 
-@app.route('/setwebhook', methods=['GET','POST'])
-def set_webhook():
-    webhook_url='https://http://killerganesh3.pythonanywhere.com/'
-    s=bot.set_webhook(url='{}{}'.format(webhook_url,API_KEY))
+#@app.route('/setwebhook', methods=['GET','POST'])
+#def set_webhook():
+#    webhook_url='https://http://killerganesh3.pythonanywhere.com/'
+#    s=bot.set_webhook(url='{}{}'.format(webhook_url,API_KEY))
     
-    if s:
-        return "webhook setup ok"
-    else:
-        return "webhook setup failed"
+#    if s:
+#        return "webhook setup ok"
+#    else:
+#        return "webhook setup failed"
 
-@app.route('/')
-def index():
-    return " welcome to index page"
-
-if __name__ == "__main__":
-    app.run(threaded=True)
+#@app.route('/')
+#def index():
+#    return " welcome to index page"
+#
+#if __name__ == "__main__":
+#    app.run(threaded=True)
+bot.infinity_polling()
