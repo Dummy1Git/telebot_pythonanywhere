@@ -1,9 +1,11 @@
+import logging
 import requests
 from flask import Flask, request
 from bs4 import BeautifulSoup
 from telegram import Update,Bot, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Dispatcher
 
+logger = logging.getLogger(__name__)
 
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
@@ -101,13 +103,17 @@ def try_statement(update,context):
                 except AttributeError:
                     update.message.reply_text('check the spelling')
 
-
+def error(update, context):
+    logger.error("Update '%s' caused error '%s'", update, update.error
+                    
+                    
 if __name__=="__main__":
     bot=Bot(API_KEY)
-    bot.set_webhook('https://telegram-bot-render-ao5o.onrender.com/'+API_KEY)
+    bot.set_webhook('https://api.render.com/deploy/srv-cfgmmeun6mph1jputjpg?key=cWHTJIHDn6c/'+API_KEY)
     
     dp=Dispatcher(bot,None)
     
     dp.add_handler(CommandHandler('start',start_handler))
     dp.add_handler(MessageHandler(Filters.text,try_statement))
-    app.run(threaded=True)
+    dp.add_error_handler(error)
+    app.run(debug=True)
