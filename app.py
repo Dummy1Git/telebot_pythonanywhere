@@ -90,20 +90,20 @@ def try_statement(update,context):
 
 def error(update, context):
     logger.error("Update '%s' caused error '%s'", update, update.error)
-                    
 
-        
 @app.route('/'+API_KEY,methods=['POST'])
+def getMessage():
     update = Update.de_json(request.get_json(), bot)
     dp.process_update(update)
-    return "ok",200
+    return "ok messages recieved",200
 
 @app.route('/')
 def webhook():
     bot.delete_webhook()
     bot.set_webhook(url="https://telegram-bot-render-ao5o.onrender.com/"+API_KEY)
     return "! web hook ",200
-                                
+
+
 if __name__=="__main__":
     dp=Dispatcher(bot,None)
     
