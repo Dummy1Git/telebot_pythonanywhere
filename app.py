@@ -93,7 +93,7 @@ def error(update, context):
                     
 
         
-@app.route('/'+API_KEY,methods=['POST])
+@app.route('/'+API_KEY,methods=['POST'])
     update = Update.de_json(request.get_json(), bot)
     dp.process_update(update)
     return "ok",200
