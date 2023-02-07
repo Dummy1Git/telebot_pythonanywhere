@@ -104,7 +104,7 @@ def try_statement(update,context):
                     update.message.reply_text('check the spelling')
 
 def error(update, context):
-    logger.error("Update '%s' caused error '%s'", update, update.error
+    logger.error("Update '%s' caused error '%s'", update, update.error)
                     
                     
 if __name__=="__main__":
