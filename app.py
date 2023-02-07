@@ -10,23 +10,8 @@ logger = logging.getLogger(__name__)
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
 
-
+bot=Bot(API_KEY)
 app=Flask(__name__)
-
-
-@app.route('/',methods=['GET','POST'])
-def Index():
-    return '<h1>Bot is working fine</h1>'
-
-
-@app.route(f'/{API_KEY}', methods=['GET', 'POST'])
-def webhook():
-    """webhook view which receives updates from telegram"""
-    # create update object from json-format request data
-    update = Update.de_json(request.get_json(), bot)
-    # process update
-    dp.process_update(update)
-    return "ok"
 
 def start_handler(update,context):
     update.message.reply_text('Hello there! Send me any movie name')
@@ -106,11 +91,20 @@ def try_statement(update,context):
 def error(update, context):
     logger.error("Update '%s' caused error '%s'", update, update.error)
                     
-                    
+
+        
+@app.route('/'+API_KEY,methods=['POST])
+    update = Update.de_json(request.get_json(), bot)
+    dp.process_update(update)
+    return "ok",200
+
+@app.route('/')
+def webhook():
+    bot.delete_webhook()
+    bot.set_webhook(url="https://telegram-bot-render-ao5o.onrender.com/"+API_KEY)
+    return "! web hook ",200
+                                
 if __name__=="__main__":
-    bot=Bot(API_KEY)
-    bot.set_webhook('https://api.render.com/deploy/srv-cfgmmeun6mph1jputjpg?key=cWHTJIHDn6c/'+API_KEY)
-    
     dp=Dispatcher(bot,None)
     
     dp.add_handler(CommandHandler('start',start_handler))
