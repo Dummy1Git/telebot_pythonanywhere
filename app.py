@@ -110,4 +110,4 @@ def webhook():
 dp.add_handler(CommandHandler('start',start_handler))
 dp.add_handler(MessageHandler(Filters.text,try_statement))
 dp.add_error_handler(error)
-app.run(threaded=True)
+app.run(debug=True,threaded=True)
