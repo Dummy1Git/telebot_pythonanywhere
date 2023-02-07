@@ -11,6 +11,8 @@ API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
 
 bot=Bot(API_KEY)
+dp=Dispatcher(bot,None)
+
 app=Flask(__name__)
 
 def start_handler(update,context):
@@ -100,14 +102,12 @@ def getMessage():
 @app.route('/')
 def webhook():
     bot.delete_webhook()
-    bot.set_webhook(url="https://telegram-bot-render-ao5o.onrender.com/"+API_KEY)
+    bot.set_webhook(url="https://songrequestbot.onrender.com/"+API_KEY)
     return "! web hook ",200
 
 
 if __name__=="__main__":
-    dp=Dispatcher(bot,None)
-    
     dp.add_handler(CommandHandler('start',start_handler))
     dp.add_handler(MessageHandler(Filters.text,try_statement))
     dp.add_error_handler(error)
-    app.run(debug=True)
+    app.run(debug=True,threaded=True)
