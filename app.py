@@ -6,14 +6,14 @@ import os
 from flask import Flask, request
 
 
-# API_KEY=  os.environ.get('API_KEY')
-API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
-WEBHOOK='https://songrequestbot.onrender.com'
-# WEBHOOK= os.environ.get('webhook_url')
+API_KEY=  os.environ.get('API_KEY','')
+#API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
+#WEBHOOK='https://songrequestbot.onrender.com'
+WEBHOOK= os.environ.get('webhook_url','')
 
 url='https://masstamilan.dev'
 
-bot=telebot.TeleBot(API_KEY)
+bot=telebot.TeleBot(API_KEY,threaded=False)
 
 app=Flask(__name__)
 
@@ -110,4 +110,4 @@ def index():
     return " welcome to index page"
 
 if __name__ == "__main__":
-    app.run(threaded=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
