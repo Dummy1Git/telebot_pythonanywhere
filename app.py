@@ -1,5 +1,6 @@
 import logging
 import requests
+import os
 from flask import Flask, request
 from bs4 import BeautifulSoup
 from telegram import Update,Bot, InlineKeyboardMarkup, InlineKeyboardButton
@@ -105,9 +106,9 @@ def webhook():
     bot.set_webhook(url="https://songrequestbot.onrender.com/"+API_KEY)
     return "! web hook ",200
 
+if __name__='__main__':
+    dp.add_handler(CommandHandler('start',start_handler))
+    dp.add_handler(MessageHandler(Filters.text,try_statement))
+    dp.add_error_handler(error)
+    app.run(host="0.0.0.0",port=int(os.environ.get('PORT',5000)))
 
-
-dp.add_handler(CommandHandler('start',start_handler))
-dp.add_handler(MessageHandler(Filters.text,try_statement))
-dp.add_error_handler(error)
-app.run(debug=True,threaded=True)
