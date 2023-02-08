@@ -4,15 +4,18 @@ import os
 from flask import Flask, request
 from bs4 import BeautifulSoup
 from telegram import Update,Bot, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Dispatcher
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 logger = logging.getLogger(__name__)
+
 
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
 url='https://masstamilan.dev'
 
+updater = Updater(API_KEY, use_context=True)
+
 bot=Bot(API_KEY)
-dp=Dispatcher(bot,None)
+
 
 app=Flask(__name__)
 
@@ -107,9 +110,9 @@ def webhook():
     return "! web hook ",200
 
 if __name__=='__main__':
+    dp=updater.dispatcher
     dp.add_handler(CommandHandler('start',start_handler))
     dp.add_handler(MessageHandler(Filters.text,try_statement))
     dp.add_error_handler(error)
-    print('Deployment started....')
     app.run(host="0.0.0.0",port=int(os.environ.get('PORT',5000)))
 
