@@ -1,51 +1,39 @@
-import logging
 import requests
+from bs4 import BeautifulSoup
+import telebot
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup 
 import os
 from flask import Flask, request
-from bs4 import BeautifulSoup
-from telegram import Update,Bot, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-
-logger = logging.getLogger(__name__)
 
 
+# API_KEY=  os.environ.get('API_KEY')
 API_KEY='5659848773:AAE7mT3MfzUwQ1B3TrQIVi6LkECWMb7rgSg'
+WEBHOOK='https://songrequestbot.onrender.com'
+# WEBHOOK= os.environ.get('webhook_url')
+
 url='https://masstamilan.dev'
 
-updater = Updater(API_KEY, use_context=True)
-
-bot=Bot(API_KEY)
-
+bot=telebot.TeleBot(API_KEY)
 
 app=Flask(__name__)
 
-def start_handler(update,context):
-    update.message.reply_text('Hello there! Send me any movie name')
-    
-def handle_message(update, context):
-    text = str(update.message.text).lower()
-    update.message.reply_text(text)
-
-def word_checker(update):
-    movie=update.message.text
-    words_list=movie.split()
-    temp_str=''
-    
-    if len(words_list)>1:
-        for word in words_list:
-            if word==words_list[0]:
-                temp_str=temp_str+word
+def word_checker(movie):
+    movie=movie.text
+    x=movie.split()
+    z=''
+    if len(x)>1:
+        for word in x:
+            if word==x[0]:
+                z=z+word
             else:
-                temp_str=temp_str+'-'+word
+                z=z+'-'+word
     else:
-        temp_str=temp_str+movie
-        
-    required_format_word=temp_str.lower()  
-    return required_format_word
+        z=z+movie
+    MOVIE=z.lower()      
+    return MOVIE
 
-
-def web_crawler(link,update):
-    base_url='https://masstamilan.dev'
+def web_crawler(link,message):
+    # base_url='https://masstamilan.dev'
     resp = requests.get(link)
     soup = BeautifulSoup(resp.text, 'html.parser')
     title_list=[]
@@ -60,59 +48,66 @@ def web_crawler(link,update):
                 b=str(content)
                 val=b.split()
                 if (title is not None and str(title)[:-8:-1]=='spbk023') and ('rel="nofollow"' in val): 
-                    Audio_link=base_url+href_value
-                    title_list.append(title[:-8:])
+                    Audio_link=url+href_value
+                    title_list.append(title)
                     Audiolink_list.append(Audio_link)
     linkd = {title_list[i]: Audiolink_list[i] for i in range(len(title_list))}
-    choose(update,link_dictionary=linkd)
+    choose(linkd,message)
 
-def choose(update: Update,link_dictionary= dict):
-    msg = update.effective_message
-    keyb = []
-    for key, value in link_dictionary.items():
-        keyb.append(
+
+def choose(dict,message):
+    buttons = []
+    for key, value in dict.items():
+        buttons.append(
         [InlineKeyboardButton(text = key, url = value )]
         )
-    msg.reply_text(f"Song from {update.message.text} movie", reply_markup=InlineKeyboardMarkup(keyb))
+    keyboard = InlineKeyboardMarkup(buttons)
+    bot.reply_to(message,text = f'🎧<b>{message.text}</b> movie songs🎧',parse_mode='HTML' ,reply_markup = keyboard)
 
-def try_statement(update,context): 
+
+bot=telebot.TeleBot(API_KEY,parse_mode=None)
+
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.send_message(message.chat.id, text=f'Hi <b>{message.from_user.first_name}</b>👋👋👋 \nWelcome to the channel !! Enter a movie name',parse_mode='HTML')
+
+@bot.message_handler(func= lambda msg: msg.content_type=='text')
+def try_statement(movie):
     try:
-        tamil=url+'/'+word_checker(update)+'-songs'
-        web_crawler(tamil,update)
+        tamil=url+'/'+word_checker(movie)+'-songs'
+        web_crawler(tamil,movie)
     except AttributeError:
         try:
-            hindi=url+'/'+word_checker(update)+'-hindi-songs'
-            web_crawler(hindi,update)
-        except AttributeError:
+            hindi=url+'/'+word_checker(movie)+'-hindi-songs'
+            web_crawler(hindi,movie)
+        except:
             try:
-                malayalam=url+'/'+word_checker(update)+'-malayalam-song'
-                web_crawler(malayalam,update)
-            except AttributeError:
+                malayalam=url+'/'+word_checker(movie)+'-malayalam-song'
+                web_crawler(malayalam,movie)
+            except:
                 try:
-                    telugu=url+'/'+word_checker(update)+'-telugu-songs'
-                    web_crawler(telugu,update)
+                    telugu=url+'/'+word_checker(movie)+'-telugu-songs'
+                    web_crawler(telugu,movie)
                 except AttributeError:
-                    update.message.reply_text('check the spelling')
+                    bot.reply_to(movie,text="Check the spelling")
 
-def error(update, context):
-    logger.error("Update '%s' caused error '%s'", update, update.error)
-
-@app.route('/'+API_KEY,methods=['POST'])
+@app.route("/"+ API_KEY,methods=["POST"])
 def getMessage():
-    update = Update.de_json(request.get_json(), bot)
-    dp.process_update(update)
-    return "ok messages recieved",200
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    return "!", 200
+
+@app.route('/setwebhook', methods=['GET','POST'])
+def set_webhook():
+    s=bot.set_webhook(url='{}{}'.format(WEBHOOK,API_KEY))
+    
+    if s:
+        return "<h1>    Webhook setup ok</h1>"
+    else:
+        return "<h1>    Webhook setup failed</h1>"
 
 @app.route('/')
-def webhook():
-    bot.delete_webhook()
-    bot.set_webhook(url="https://songrequestbot.onrender.com/"+API_KEY)
-    return "! web hook ",200
+def index():
+    return " welcome to index page"
 
-if __name__=='__main__':
-    dp=updater.dispatcher
-    dp.add_handler(CommandHandler('start',start_handler))
-    dp.add_handler(MessageHandler(Filters.text,try_statement))
-    dp.add_error_handler(error)
-    app.run(host="0.0.0.0",port=int(os.environ.get('PORT',5000)))
-
+if __name__ == "__main__":
+    app.run(threaded=True)
